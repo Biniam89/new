@@ -129,8 +129,8 @@ def add_to_cart(request, phone_id):
         except (ValueError, TypeError):
             quantity_to_add = 1
     cart_item, item_created = CartItem.objects.get_or_create(cart=cart, phone=phone)
-    current_qty = cart_item.quantity if not item_created else 0
-    available = max(0, phone.stock - current_qty)
+    # since stock is adjusted when items are added/removed, available stock is just phone.stock
+    available = max(0, phone.stock)
     if available <= 0:
         messages.error(request, 'This product is out of stock.')
         return redirect('phone_detail_url', phone_id=phone.id)
@@ -140,6 +140,10 @@ def add_to_cart(request, phone_id):
     else:
         cart_item.quantity = add_amount
     cart_item.save()
+    # reduce phone stock by the amount added to cart
+    if add_amount > 0:
+        phone.stock = max(0, phone.stock - add_amount)
+        phone.save()
     if add_amount < quantity_to_add:
         messages.warning(request, f'Only {add_amount} items were available and added to your cart.')
     return redirect('cart_view_url')
@@ -148,6 +152,10 @@ def add_to_cart(request, phone_id):
 @login_required
 def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    # return the quantity back to stock when item removed
+    phone = cart_item.phone
+    phone.stock = phone.stock + cart_item.quantity
+    phone.save()
     cart_item.delete()
     return redirect('cart_view_url')
 
