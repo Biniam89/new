@@ -12,7 +12,7 @@ class PhoneForm(forms.ModelForm):
         fields = [
             'title', 'brand', 'price', 
             'storage_capacity', 'ram', 'screen_size', 'battery', 
-            'description', 'image'
+            'description', 'image', 'stock'
         ]
 
 class CommentForm(forms.ModelForm):

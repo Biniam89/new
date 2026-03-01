@@ -78,10 +78,15 @@
                         </div>
 
                         <h4 class="text-danger fw-bold">{{ phone.price }}</h4>
+                        {% if phone.stock > 0 %}
+                          <div class="mt-2"><span class="badge bg-success" data-bs-toggle="tooltip" title="Available quantity: {{ phone.stock }}">In stock: {{ phone.stock }}</span></div>
+                        {% else %}
+                          <div class="mt-2"><span class="badge bg-danger" data-bs-toggle="tooltip" title="Currently unavailable">Out of stock</span></div>
+                        {% endif %}
                     </div>
                     
                     <div class="card-footer bg-white border-0 text-center pb-3">
-                        <a href="{% url 'phone_detail_url' phone.id %}" class="btn btn-outline-primary w-100 shadow-sm">View Details</a>
+                        <a href="{% url 'phone_detail_url' phone.id %}" class="btn btn-outline-primary w-100 shadow-sm" data-bs-toggle="tooltip" title="See full details">View Details</a>
                     </div>
                 </div> 
             </div> 

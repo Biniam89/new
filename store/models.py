@@ -20,6 +20,7 @@ class Phone(models.Model):
     
     date_added = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(default=0, help_text="Number of items in stock")
 
     def __str__(self):
         return f"{self.brand.name if self.brand else ''} {self.title}"

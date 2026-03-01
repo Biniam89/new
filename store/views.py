@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+import json
 
 from .models import Phone, Brand, Comment, PhoneImage, Cart, CartItem
 from .forms import PhoneForm, CommentForm
@@ -29,10 +31,17 @@ def home(request, brand_id=None):
     if ram_filter:
         phones = phones.filter(ram__icontains=ram_filter)
 
+    # prepare top sellers chart data (by price)
+    top_sellers = phones.order_by('-price')[:5]
+    top_labels = [p.title for p in top_sellers]
+    top_values = [float(p.price) for p in top_sellers]
+
     return render(request, 'store/home.html', {
         'phones': phones,
         'brands': brands,
         'current_brand': current_brand,
+        'top_labels_json': json.dumps(top_labels),
+        'top_values_json': json.dumps(top_values),
     })
 
 
@@ -113,13 +122,26 @@ def add_to_cart(request, phone_id):
     cart, created = Cart.objects.get_or_create(user=request.user)
     quantity_to_add = 1
     if request.method == 'POST':
-        quantity_to_add = int(request.POST.get('quantity', 1))
+        try:
+            quantity_to_add = int(request.POST.get('quantity', 1))
+            if quantity_to_add < 1:
+                quantity_to_add = 1
+        except (ValueError, TypeError):
+            quantity_to_add = 1
     cart_item, item_created = CartItem.objects.get_or_create(cart=cart, phone=phone)
+    current_qty = cart_item.quantity if not item_created else 0
+    available = max(0, phone.stock - current_qty)
+    if available <= 0:
+        messages.error(request, 'This product is out of stock.')
+        return redirect('phone_detail_url', phone_id=phone.id)
+    add_amount = min(quantity_to_add, available)
     if not item_created:
-        cart_item.quantity += quantity_to_add
+        cart_item.quantity += add_amount
     else:
-        cart_item.quantity = quantity_to_add
+        cart_item.quantity = add_amount
     cart_item.save()
+    if add_amount < quantity_to_add:
+        messages.warning(request, f'Only {add_amount} items were available and added to your cart.')
     return redirect('cart_view_url')
 
 

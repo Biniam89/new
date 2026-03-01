@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,8 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         body { display: flex; flex-direction: column; min-height: 100vh; }
         main { flex: 1; }
+        /* Card hover effect */
+        .card:hover { transform: translateY(-4px); transition: transform 0.2s; }
     </style>
 </head>
 <body>
@@ -64,6 +66,17 @@
         </div>
     </nav>
 
+    {% if messages %}
+      <div class="container mt-3">
+        {% for msg in messages %}
+          <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <main class="container my-4">
         {% block content %}{% endblock %}
     </main>
@@ -79,6 +92,11 @@
             loader.style.opacity = "0";
             setTimeout(() => loader.style.display = "none", 500);
         });
+        // enable any tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
     </script>
 </body>
 </html>

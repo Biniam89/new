@@ -3,8 +3,14 @@
 {% block content %}
 <h1>Edit {{ phone.title }}</h1>
 <form method="POST" enctype="multipart/form-data">
-	{% csrf_token %}
-	{{ form.as_p }}
-	<button>Save</button>
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if phone.image %}
+        <div class="mb-3">
+            <label class="form-label">Current Image</label><br>
+            <img src="{{ phone.image.url }}" class="img-fluid" style="max-height:200px;">
+        </div>
+    {% endif %}
+    <button class="btn btn-success">Save</button>
 </form>
 {% endblock %}

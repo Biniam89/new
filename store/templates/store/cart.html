@@ -5,7 +5,7 @@
 
 {% if cart.items.all %}
     <div class="table-responsive shadow-sm bg-white rounded p-3">
-       <table class="table align-middle">
+       <table class="table align-middle table-hover">
             <thead class="table-light">
                 <tr>
                     <th>Product</th>
@@ -22,11 +22,16 @@
                         <br><small class="text-muted">{{ item.phone.brand.name }}</small>
                     </td>
                     <td>{{ item.phone.price }}</td>
-                    <td>{{ item.quantity }}</td>
+                    <td>
+                        {{ item.quantity }}
+                        {% if item.phone.stock < item.quantity %}
+                            <span class="badge bg-danger ms-2">Only {{ item.phone.stock }} available</span>
+                        {% endif %}
+                    </td>
                     <td class="fw-bold text-success">{{ item.total_price }}</td>
                     
                     <td>
-                        <a href="{% url 'remove_from_cart_url' item.id %}" class="btn btn-sm btn-outline-danger">
+                        <a href="{% url 'remove_from_cart_url' item.id %}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Remove item">
                             <i class="bi bi-trash"></i> Remove
                         </a>
                     </td>
