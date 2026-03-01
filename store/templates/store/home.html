@@ -1,0 +1,97 @@
+{% extends 'base.html' %} 
+{% block content %} 
+
+<div class="p-5 text-center bg-primary text-white rounded shadow-sm mb-5">
+    <h1 class="fw-bold">Welcome to PhoneStore</h1>
+    <p class="lead">Find the best smartphones at unbeatable prices.</p>
+</div>
+
+<div class="row"> 
+    <div class="col-md-3 mb-4"> 
+        
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-header bg-dark text-white fw-bold">
+                <i class="bi bi-funnel"></i> Filter Products
+            </div>
+            <div class="card-body bg-light">
+                <form method="GET" action="{% url 'home_url' %}">
+                    {% if request.GET.q %}
+                        <input type="hidden" name="q" value="{{ request.GET.q }}">
+                    {% endif %}
+
+                    <h6 class="fw-bold">Price Range ($)</h6>
+                    <div class="d-flex mb-3 gap-2">
+                        <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="{{ request.GET.min_price }}">
+                        <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="{{ request.GET.max_price }}">
+                    </div>
+
+                    <h6 class="fw-bold">RAM</h6>
+                    <select name="ram" class="form-select form-select-sm mb-3">
+                        <option value="">Any RAM</option>
+                        <option value="4GB" {% if request.GET.ram == '4GB' %}selected{% endif %}>4GB</option>
+                        <option value="6GB" {% if request.GET.ram == '6GB' %}selected{% endif %}>6GB</option>
+                        <option value="8GB" {% if request.GET.ram == '8GB' %}selected{% endif %}>8GB</option>
+                        <option value="12GB" {% if request.GET.ram == '12GB' %}selected{% endif %}>12GB</option>
+                        <option value="16GB" {% if request.GET.ram == '16GB' %}selected{% endif %}>16GB</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">Apply Filters</button>
+                    <a href="{% url 'home_url' %}" class="btn btn-sm btn-outline-secondary w-100 mt-2">Clear</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold">Brands</div>
+            <div class="list-group list-group-flush"> 
+                <a href="{% url 'home_url' %}" class="list-group-item list-group-item-action {% if not current_brand %}active{% endif %}">
+                    All Brands
+                </a>
+                {% for brand in brands %} 
+                <a href="{% url 'brand_filter_url' brand.id %}" class="list-group-item list-group-item-action {% if current_brand == brand %}active{% endif %}">
+                    {{ brand.name }}
+                </a> 
+                {% endfor %} 
+            </div> 
+        </div>
+    </div> 
+
+    <div class="col-md-9"> 
+        <div class="row row-cols-1 row-cols-md-3 g-4"> 
+            {% for phone in phones %} 
+            <div class="col"> 
+                <div class="card h-100 shadow-sm border-0"> 
+                    
+                    {% if phone.image %}
+                        <img src="{{ phone.image.url }}" class="card-img-top p-3" style="height: 250px; object-fit: contain;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center p-3" style="height: 250px;">No Image</div>
+                    {% endif %}
+
+                    <div class="card-body text-center">
+                        <span class="badge bg-secondary mb-2">{{ phone.brand.name }}</span>
+                        <h5 class="card-title fw-bold text-truncate mb-1">{{ phone.title }}</h5>
+                        
+                        <div class="mb-2" style="font-size: 0.9rem;">
+                            {{ phone.stars_html|safe }}
+                            <span class="text-muted ms-1">({{ phone.comments.count }})</span>
+                        </div>
+
+                        <h4 class="text-danger fw-bold">{{ phone.price }}</h4>
+                    </div>
+                    
+                    <div class="card-footer bg-white border-0 text-center pb-3">
+                        <a href="{% url 'phone_detail_url' phone.id %}" class="btn btn-outline-primary w-100 shadow-sm">View Details</a>
+                    </div>
+                </div> 
+            </div> 
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h3 class="text-muted">No phones matched your filters.</h3>
+                <a href="{% url 'home_url' %}" class="btn btn-primary mt-3">Clear all filters</a>
+            </div>
+            {% endfor %} 
+        </div> 
+    </div> 
+</div> 
+{% endblock %}

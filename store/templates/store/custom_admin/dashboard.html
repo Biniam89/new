@@ -1,0 +1,34 @@
+{% extends 'base.html' %} 
+
+{% block content %} 
+<h1>Admin Dashboard</h1> 
+
+<div class="card shadow-sm p-4 mb-5">
+    <h3>Add a New Phone</h3> 
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <div class="mb-3">
+            <label class="form-label fw-bold">Extra Gallery Images (Select multiple):</label>
+            <input type="file" name="gallery_images" multiple accept="image/*" class="form-control">
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-2">Add Phone</button>
+    </form> 
+</div>
+
+<hr> 
+<h3>Inventory</h3> 
+<ul class="list-group"> 
+    {% for phone in phones %} 
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ phone.title }} - ${{ phone.price }}
+        <div>
+            <a href='{% url "edit_phone_url" phone.id %}' class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href='{% url "delete_phone_url" phone.id %}' class="btn btn-sm btn-danger">Delete</a>
+        </div>
+    </li> 
+    {% endfor %} 
+</ul> 
+{% endblock %}

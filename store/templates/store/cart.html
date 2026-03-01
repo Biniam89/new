@@ -1,0 +1,55 @@
+{% extends 'base.html' %} 
+{% block content %} 
+
+<h2 class="fw-bold mb-4">🛒 Your Shopping Cart</h2>
+
+{% if cart.items.all %}
+    <div class="table-responsive shadow-sm bg-white rounded p-3">
+       <table class="table align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th> </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items.all %}
+                <tr>
+                    <td>
+                        <span class="fw-bold">{{ item.phone.title }}</span>
+                        <br><small class="text-muted">{{ item.phone.brand.name }}</small>
+                    </td>
+                    <td>{{ item.phone.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td class="fw-bold text-success">{{ item.total_price }}</td>
+                    
+                    <td>
+                        <a href="{% url 'remove_from_cart_url' item.id %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Remove
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="d-flex justify-content-end mt-4">
+        <div class="card shadow-sm p-4" style="width: 300px;">
+            <h4 class="fw-bold d-flex justify-content-between">
+                <span>Total:</span> 
+                <span class="text-danger">{{ cart.total_cart_price }}</span>
+            </h4>
+            <button class="btn btn-warning btn-lg w-100 mt-3 fw-bold">Proceed to Checkout</button>
+        </div>
+    </div>
+
+{% else %}
+    <div class="alert alert-info fs-5 text-center p-5 shadow-sm">
+        Your cart is completely empty! <br>
+        <a href="{% url 'home_url' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+    </div>
+{% endif %}
+{% endblock %}
